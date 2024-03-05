@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS task;
+
+
+CREATE TABLE task(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    parent_id INTEGER,
+    title TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'EMPTY' CHECK (status in ('EMPTY','HALF','DONE')),
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_date TIMESTAMP DEFAULT NULL,
+    FOREIGN KEY (parent_id) REFERENCES task (id)
+
+);
+
