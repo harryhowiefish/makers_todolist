@@ -7,6 +7,18 @@ Adam Savage Inspired Todo List
 - half marked
 - filter empty and mark
 
+
+### action list (test first)
+- filter half marked, empty, complete
+- get all task
+- show parent tree for task
+- filter empty
+- filter complete
+- create views
+    - Task listing
+        - add task
+    - single task view for delete and edit
+
 ### additional function
 - time base
     - reoccurence task

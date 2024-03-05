@@ -39,7 +39,7 @@ class Testrouting:
 
     @staticmethod
     def test_delete_success(client):
-        response = client.delete('/api/v1/tasks?id=4')
+        response = client.delete('/api/v1/tasks?id=3')
         assert response.status_code == 204
 
     @staticmethod
@@ -61,7 +61,7 @@ class TestPostTask:
         data = {'title': 'Test Post', 'parent_id': 1}
         response = api.post_task(data)
         result = json.loads(response.data)
-        expected = {'data': [{'id': 5, 'title': 'Test Post',
+        expected = {'data': [{'id': 6, 'title': 'Test Post',
                     'parent_id': 1, 'status': 'EMPTY'}
                              ]}
         assert response.status_code == 200
@@ -80,7 +80,7 @@ class TestPostTask:
         data = {'title': 'Test Post'}
         response = api.post_task(data)
         result = json.loads(response.data)
-        expected = {'data': [{'id': 5, 'title': 'Test Post',
+        expected = {'data': [{'id': 6, 'title': 'Test Post',
                     'parent_id': None, 'status': 'EMPTY'}
                              ]}
         assert response.status_code == 200
@@ -103,7 +103,8 @@ class TestGetTasks:
                     [{'Level': 1, 'id': 1, 'title': 'Main_task_1',
                         'parent_id': None, 'status': 'EMPTY'},
                      {'Level': 2, 'id': 3, 'title': 'Sub_task_1',
-                        'parent_id': 1, 'status': 'EMPTY'}
+                        'parent_id': 1, 'status': 'HALF'},
+
                      ]}
         result = json.loads(response.data)
         assert response.status_code == 200
@@ -131,6 +132,45 @@ class TestGetTasks:
     def test_missing_data(app_context):
         response = api.get_task(10, 'single')
         expected = {}
+        result = json.loads(response.data)
+        assert response.status_code == 200
+        assert result == expected
+
+
+class TestFilterTasks:
+    @staticmethod
+    def test_filter_empty(app_context):
+        expected = {'data':
+                    [{'id': 1, 'title': 'Main_task_1',
+                        'parent_id': None, 'status': 'EMPTY'},
+                     {'id': 2, 'title': 'Main_task_2',
+                        'parent_id': None, 'status': 'EMPTY'},
+                     {'id': 4, 'title': 'Sub_task_2',
+                        'parent_id': 2, 'status': 'EMPTY'}
+                     ]}
+        response = api.filter_task(filter='EMPTY')
+        result = json.loads(response.data)
+        assert response.status_code == 200
+        assert result == expected
+
+    @staticmethod
+    def test_filter_half(app_context):
+        expected = {'data':
+                    [{'id': 3, 'title': 'Sub_task_1',
+                        'parent_id': 1, 'status': 'HALF'}
+                     ]}
+        response = api.filter_task(filter='HALF')
+        result = json.loads(response.data)
+        assert response.status_code == 200
+        assert result == expected
+
+    @staticmethod
+    def test_filter_full(app_context):
+        expected = {'data':
+                    [{'id': 5, 'title': 'Bottom_task_1',
+                        'parent_id': 4, 'status': 'FULL'}
+                     ]}
+        response = api.filter_task(filter='FULL')
         result = json.loads(response.data)
         assert response.status_code == 200
         assert result == expected
@@ -186,7 +226,7 @@ class TestDeleteTask:
 
     @staticmethod
     def test_delete_success(app_context):
-        response = api.delete_task(4)
+        response = api.delete_task(100)
         assert response[0] == ''
         assert response[1] == 204
 
