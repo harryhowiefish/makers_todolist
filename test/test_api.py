@@ -111,6 +111,25 @@ class TestGetTasks:
         assert result == expected
 
     @staticmethod
+    def test_get_all(app_context):
+        response = api.get_task(None, 'all')
+        expected = {'data':
+                    [{'Level': 1, 'id': 1, 'title': 'Main_task_1',
+                        'parent_id': None, 'status': 'EMPTY'},
+                     {'Level': 2, 'id': 3, 'title': 'Sub_task_1',
+                        'parent_id': 1, 'status': 'HALF'},
+                     {'Level': 1, 'id': 2, 'title': 'Main_task_2',
+                        'parent_id': None, 'status': 'EMPTY'},
+                     {'Level': 2, 'id': 4, 'title': 'Sub_task_2',
+                        'parent_id': 1, 'status': 'EMPTY'},
+                     {'Level': 3, 'id': 5, 'title': 'Bottom_task_1',
+                        'parent_id': 1, 'status': 'FULL'},
+                     ]}
+        result = json.loads(response.data)
+        assert response.status_code == 200
+        assert result == expected
+
+    @staticmethod
     def test_get_task_single(app_context):
         response = api.get_task(1, 'single')
         expected = {'data':
@@ -245,6 +264,23 @@ class TestDeleteTask:
                     }
         assert result == expected
         assert response[1] == 400
+
+
+class TestShowLineage:
+    def test_no_parent_id(app_context):
+        response = api.show_lineage(1)
+        result = json.loads(response.data)
+        expected = {'lineage': []}
+        assert response.status_code == 200
+        assert result == expected
+
+    def test_two_level_parent(app_context):
+        response = api.show_lineage(5)
+        result = json.loads(response.data)
+        expected = {'lineage': [{'id': 4, 'title': 'Sub_task_2'},
+                                {'id': 2, 'title': 'Main_task_2'}]}
+        assert response.status_code == 200
+        assert result == expected
 
 
 class MockRow:

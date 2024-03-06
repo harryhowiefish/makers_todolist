@@ -9,18 +9,21 @@ Adam Savage Inspired Todo List
 
 
 ### action list (test first)
-- filter half marked, empty, complete
-- get all task
-- show parent tree for task
-- filter empty
-- filter complete
+- add tests for
+    - add routing test
+- complete functionality
+    - filter half marked, empty, complete
+    - get all task
+    - show parent tree for task 
+
+
 - create views
     - Task listing
         - add task
     - single task view for delete and edit
 
 ### additional function
-- time base
+- time based
     - reoccurence task
     - weekly view
 

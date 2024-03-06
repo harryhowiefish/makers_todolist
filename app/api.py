@@ -127,8 +127,8 @@ def delete_task(id):
                         }), 400
 
 
-def RowsToDict(data: Row) -> list:
+def RowsToDict(data: Row, key_name: str = 'data') -> list:
     if not data:
         return {}
     result = [dict(zip(item.keys(), item)) for item in data]
-    return {"data": result}
+    return {key_name: result}
