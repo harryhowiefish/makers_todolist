@@ -10,12 +10,17 @@ bp = Blueprint('api', __name__, url_prefix="/api/v1")
 def task_by_id():
     id = request.args.get('id', default=None, type=int)
 
-    if id is not None:
-        if request.method == 'GET':
-            mode = request.args.get('mode', default='tree', type=str).lower()
-            return get_task(id, mode)
+    if request.method == 'GET':
+        mode = request.args.get('mode', default='', type=str).lower()
+        if mode == '' and id is None:
+            return '', 400
+        elif mode == '':
+            mode = 'tree'
+        return get_task(id, mode)
 
-        elif request.method == 'PATCH':
+    if id is not None:
+
+        if request.method == 'PATCH':
             data = request.json
             return patch_task(id, data)
 
@@ -46,6 +51,7 @@ def get_task(id, mode):
             SELECT * FROM TaskTree;
             ''', (id,)).fetchall()
         return jsonify(RowsToDict(data))
+
     elif mode == 'single':
         data = db.execute(
             '''
@@ -54,7 +60,34 @@ def get_task(id, mode):
             WHERE id = ?
             ''', (id,)).fetchall()
         return jsonify(RowsToDict(data))
+
+    elif mode == 'all':
+        data = db.execute(
+            '''
+            WITH RECURSIVE TaskTree AS (
+            SELECT id, title, parent_id, status, 1 AS Level
+            FROM task
+            WHERE parent_id is NULL
+            UNION ALL
+            SELECT t.id, t.title, t.parent_id, t.status, tt.Level + 1
+            FROM task t
+            INNER JOIN TaskTree tt ON t.parent_id = tt.id
+            )
+            SELECT * FROM TaskTree;
+            ''').fetchall()
+        return jsonify(RowsToDict(data))
     return jsonify({'error': 'Bad mode.'}), 400
+
+
+def filter_task(filter):
+    db = get_db()
+    data = db.execute(
+        '''
+    SELECT id, title, parent_id, status
+    FROM task
+    WHERE status = ?
+    ''', (filter,)).fetchall()
+    return jsonify(RowsToDict(data))
 
 
 def post_task(data):
@@ -127,8 +160,28 @@ def delete_task(id):
                         }), 400
 
 
+def show_lineage(id):
+    db = get_db()
+    data = db.execute(
+        '''
+        WITH RECURSIVE Lineage AS (
+        SELECT id, title, parent_id, 1 AS Level
+        FROM task
+        WHERE id = ?
+        UNION ALL
+        SELECT t.id, t.title, t.parent_id, l.Level + 1
+        FROM task t
+        INNER JOIN Lineage l ON t.id = l.parent_id
+        )
+        SELECT id, title FROM Lineage
+        ORDER BY Level;
+        ''', (id,)).fetchall()
+
+    return jsonify(RowsToDict(data[1:], 'lineage'))
+
+
 def RowsToDict(data: Row, key_name: str = 'data') -> list:
     if not data:
-        return {}
+        return {key_name: []}
     result = [dict(zip(item.keys(), item)) for item in data]
     return {key_name: result}

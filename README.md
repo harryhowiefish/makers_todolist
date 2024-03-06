@@ -12,15 +12,14 @@ Adam Savage Inspired Todo List
 - add tests for
     - add routing test
 - complete functionality
-    - filter half marked, empty, complete
-    - get all task
-    - show parent tree for task 
 
 
 - create views
     - Task listing
         - add task
     - single task view for delete and edit
+
+- add docstrings and type hints
 
 ### additional function
 - time based

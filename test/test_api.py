@@ -116,14 +116,14 @@ class TestGetTasks:
         expected = {'data':
                     [{'Level': 1, 'id': 1, 'title': 'Main_task_1',
                         'parent_id': None, 'status': 'EMPTY'},
-                     {'Level': 2, 'id': 3, 'title': 'Sub_task_1',
-                        'parent_id': 1, 'status': 'HALF'},
                      {'Level': 1, 'id': 2, 'title': 'Main_task_2',
                         'parent_id': None, 'status': 'EMPTY'},
+                     {'Level': 2, 'id': 3, 'title': 'Sub_task_1',
+                        'parent_id': 1, 'status': 'HALF'},
                      {'Level': 2, 'id': 4, 'title': 'Sub_task_2',
-                        'parent_id': 1, 'status': 'EMPTY'},
+                        'parent_id': 2, 'status': 'EMPTY'},
                      {'Level': 3, 'id': 5, 'title': 'Bottom_task_1',
-                        'parent_id': 1, 'status': 'FULL'},
+                        'parent_id': 4, 'status': 'FULL'},
                      ]}
         result = json.loads(response.data)
         assert response.status_code == 200
@@ -150,7 +150,7 @@ class TestGetTasks:
     @staticmethod
     def test_missing_data(app_context):
         response = api.get_task(10, 'single')
-        expected = {}
+        expected = {'data': []}
         result = json.loads(response.data)
         assert response.status_code == 200
         assert result == expected
@@ -267,6 +267,7 @@ class TestDeleteTask:
 
 
 class TestShowLineage:
+    @staticmethod
     def test_no_parent_id(app_context):
         response = api.show_lineage(1)
         result = json.loads(response.data)
@@ -274,6 +275,7 @@ class TestShowLineage:
         assert response.status_code == 200
         assert result == expected
 
+    @staticmethod
     def test_two_level_parent(app_context):
         response = api.show_lineage(5)
         result = json.loads(response.data)
@@ -314,5 +316,11 @@ class TestRowsToDict:
     @staticmethod
     def test_empty():
         mock_data = []
-        expected_result = {}
+        expected_result = {'data': []}
         assert api.RowsToDict(mock_data) == expected_result
+
+    @staticmethod
+    def test_assign_key():
+        mock_data = []
+        expected_result = {'mock_key': []}
+        assert api.RowsToDict(mock_data, 'mock_key') == expected_result
