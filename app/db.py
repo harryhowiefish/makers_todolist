@@ -22,7 +22,7 @@ def close_db(e=None):
         db.close()
 
 
-def init_db(folder_path: str | Path):
+def init_db(folder_path: str | Path, load_sample=True):
     if not os.path.exists(folder_path):
         raise FileExistsError("Path doesn't exist.")
     DB_PATH = Path(folder_path) / 'app.sqlite'
@@ -31,6 +31,9 @@ def init_db(folder_path: str | Path):
     db = sqlite3.connect(DB_PATH)
     with open('app/schema.sql', encoding='utf-8') as f:
         db.executescript(f.read())
+    if load_sample:
+        with open('app/sample_data.sql', encoding='utf-8') as f:
+            db.executescript(f.read())
 
 
 if __name__ == "__main__":

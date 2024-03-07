@@ -8,6 +8,7 @@ def create_app(test_config=None):
     if test_config:
         app.config.from_mapping(**test_config)
     from . import db, todo, api
+    db.init_db(app.instance_path)
     app.teardown_appcontext(db.close_db)
 
     app.register_blueprint(todo.bp)

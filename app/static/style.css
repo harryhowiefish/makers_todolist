@@ -1,0 +1,190 @@
+/* VARIABLES */
+
+:root {
+  --primary-color: #333;
+}
+
+/* MAIN ELEMENTS */
+
+body {
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 80px 0;
+}
+
+main {
+  /* margin: 0px auto; */
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* gap: 30px;
+  width: 70vw; */
+  text-align: center;
+
+}
+
+main>section {
+  padding: 40px 50px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  border: 1px solid #e9e9e9;
+  box-shadow: 0 0 8px 3px #f9f9f9;
+
+}
+
+h1 {
+  font-size: 30px;
+}
+
+ul {
+  list-style-type: none;
+  /* Removes the default list icons */
+  padding-left: 30px;
+  /* Adds indentation to maintain the list format */
+  font-size: 16px;
+}
+
+h1,
+h1 a,
+h2,
+h3,
+h4 {
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* NAV */
+
+nav {
+  text-align: center;
+  margin: 0 0 60px 0;
+}
+
+main>section>div {
+  margin-bottom: 30px;
+}
+
+main>section>div:last-child {
+  margin-bottom: 0;
+}
+
+a {
+  color: #6c5ce7;
+  text-decoration: none;
+}
+
+a:hover {
+  border-bottom: 2px solid #6c5ce7;
+}
+
+input[type='text'],
+input[type='button'] {
+  padding: 3px 3px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+}
+
+
+
+input:hover {
+  border: 1px solid var(--primary-color);
+}
+
+.list-container {
+  display: flex;
+  /* Use flexbox to center the content */
+  justify-content: center;
+  /* Center horizontally */
+  align-items: center;
+  /* Center vertically */
+}
+
+/* ADD TASKS */
+
+#add-task {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+#add-task input[type='text'] {
+  flex-grow: 1;
+}
+
+/* DESCRIPTION */
+
+#description {
+  line-height: 23px;
+}
+
+/* CHECKBOXES */
+
+.checkbox-group {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-bottom: 15px;
+  height: 20px;
+  line-height: 24px;
+}
+
+.checkbox {
+  height: 15px;
+  width: 15px;
+  border: 1px solid var(--primary-color);
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 3px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.checkbox-group:hover .checkbox {
+  opacity: 1;
+}
+
+.checkbox::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 2px;
+}
+
+.checkbox.half::after {
+  background: linear-gradient(135deg,
+      var(--primary-color) 50%,
+      transparent 50%);
+}
+
+.checkbox.full::after {
+  background: var(--primary-color);
+}
+
+.checkbox-group label {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* FOOTER */
+
+footer {
+  background: #f9f9f9;
+  position: fixed;
+  bottom: 0;
+  text-align: center;
+  width: 100vw;
+  padding: 10px 0;
+}
+
+/* MOBILE & SMALL SCREENS */
+
+@media (max-width: 1000px) {
+  main {
+    flex-direction: column;
+  }
+
+  #add-task {
+    flex-wrap: wrap;
+  }
+}

@@ -14,6 +14,11 @@ class Testrouting:
         assert response.status_code == 200
 
     @staticmethod
+    def test_get_all_mode(client):
+        response = client.get('/api/v1/tasks?id=1&mode=all')
+        assert response.status_code == 200
+
+    @staticmethod
     def test_get_bad_mode(client):
         response = client.get('/api/v1/tasks?id=1&mode=bad')
         assert response.status_code == 400
@@ -46,6 +51,22 @@ class Testrouting:
     def test_delete_missing_id(client):
         response = client.delete('/api/v1/tasks')
         assert response.status_code == 400
+
+    @staticmethod
+    def test_filter_success(client, monkeypatch):
+        class Recorder(object):
+            called = False
+
+        def fake_filter_task(filter):
+            Recorder.called = True
+            Recorder.filter = filter
+            return []
+        monkeypatch.setattr('app.api.filter_task',
+                            lambda filter: fake_filter_task(filter))
+        response = client.get("/api/v1/tasks?filter=FULL")
+        assert response.status_code == 200
+        assert Recorder.called
+        assert Recorder.filter == 'full'
 
     @staticmethod
     def test_post_success(client):

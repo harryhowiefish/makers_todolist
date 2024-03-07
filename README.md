@@ -9,11 +9,6 @@ Adam Savage Inspired Todo List
 
 
 ### action list (test first)
-- add tests for
-    - add routing test
-- complete functionality
-
-
 - create views
     - Task listing
         - add task

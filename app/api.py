@@ -9,16 +9,14 @@ bp = Blueprint('api', __name__, url_prefix="/api/v1")
 @bp.route('/tasks', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def task_by_id():
     id = request.args.get('id', default=None, type=int)
-
-    if request.method == 'GET':
-        mode = request.args.get('mode', default='', type=str).lower()
-        if mode == '' and id is None:
-            return '', 400
-        elif mode == '':
-            mode = 'tree'
-        return get_task(id, mode)
+    mode = request.args.get('mode', default='', type=str).lower()
+    filter = request.args.get('filter', default='', type=str).lower()
 
     if id is not None:
+        if request.method == 'GET':
+            if mode == '':
+                mode = 'tree'
+            return get_task(id, mode)
 
         if request.method == 'PATCH':
             data = request.json
@@ -27,7 +25,10 @@ def task_by_id():
         elif request.method == 'DELETE':
             return delete_task(id)
 
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return filter_task(filter)
+
+    elif request.method == 'POST':
         data = request.json
         return post_task(data)
 
@@ -64,16 +65,9 @@ def get_task(id, mode):
     elif mode == 'all':
         data = db.execute(
             '''
-            WITH RECURSIVE TaskTree AS (
-            SELECT id, title, parent_id, status, 1 AS Level
+            SELECT id, title, parent_id, status
             FROM task
-            WHERE parent_id is NULL
-            UNION ALL
-            SELECT t.id, t.title, t.parent_id, t.status, tt.Level + 1
-            FROM task t
-            INNER JOIN TaskTree tt ON t.parent_id = tt.id
-            )
-            SELECT * FROM TaskTree;
+            ORDER BY id
             ''').fetchall()
         return jsonify(RowsToDict(data))
     return jsonify({'error': 'Bad mode.'}), 400
