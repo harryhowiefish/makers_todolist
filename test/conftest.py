@@ -18,7 +18,7 @@ def app(tmp_path):
         'DATABASE': DB_PATH,
     })
     with app.app_context():
-        init_db(str(tmp_path))
+        init_db(str(tmp_path), load_sample=False)
         db = get_db()
         db.executescript(_data_sql)
 

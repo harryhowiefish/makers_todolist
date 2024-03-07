@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <main>
-    <h1>All tasks</h1>
+    <h1>Tasks List</h1>
     <div class="table-container">
         {% macro render_tasks(tasks, level=0) %}
         {% for task in tasks %}
@@ -44,17 +44,29 @@
         {{ render_tasks(tasks) }}
     </table>
     </div>
-    <h1>Add Task</h1>
-    <form action=" /api/v1/tasks" method="post">
+    <h1>Edit Task</h1>
+    <form action=" /submit?process=edit" method="post">
+        <input type="hidden" name="id" value="{{tasks[0].id}}">
         <label for="title">Task Title:</label>
-        <input type="text" id="title" name="title">
-
-        <select name="parent_id" id="parent_id">
-            <option value="" ,default>-</option>
-            {% for parent in parents %}
-            <option value="{{parent.id}}">{{parent.title}}</option>
-            {% endfor %}
-        </select>
+        <input type="text" name="title" value="{{tasks[0].title}}">
+        </p>
+        <p>
+            <label for="title">Task status:</label>
+            <select name="task_status" id="task_status">
+                <option value="EMPTY" {% if tasks[0].status=='EMPTY' %}selected{% endif %}>pending</option>
+                <option value="HALF" {% if tasks[0].status=='HALF' %}selected{% endif %}>ongoing</option>
+                <option value="FULL" {% if tasks[0].status=='FULL' %}selected{% endif %}>completed</option>
+            </select>
+        </p>
+        <p>
+            <label for="title">Parent task:</label>
+            <select name="parent_id" id="parent_id">
+                {% for parent in parents %}
+                <option value="{{parent.id}}" {% if tasks[0].parent_id==parent.id %}selected{% endif %}>{{parent.title}}
+                </option>
+                {% endfor %}
+            </select>
+        </p>
 
         <input type="submit" value="Submit">
     </form>

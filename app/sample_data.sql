@@ -7,7 +7,7 @@ VALUES
   (2, 'Create detailed drawing','HALF'),
   (1,'Materials','HALF'),
   (6,'Purchase wood','FULL'),
-  (6,'Buy finishing max','EMPTY'),
+  (6,'Buy finishing wax','EMPTY'),
   (1,'Cutting and Assembly','EMPTY'),
   (1, 'Finishing','EMPTY')
   ;

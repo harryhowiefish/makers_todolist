@@ -9,12 +9,13 @@ Adam Savage Inspired Todo List
 
 
 ### action list (test first)
-- create views
-    - Task listing
-        - add task
-    - single task view for delete and edit
-
+- Change single view title to dyanmic
+- check if function returns in api calls should be jsonify (prolly not)
+- remove cleanup task function and tests
+- see if more tests are needed
 - add docstrings and type hints
+- reorganize code to fit pythonanywhere format.
+- create a new branch to do session db
 
 ### additional function
 - time based

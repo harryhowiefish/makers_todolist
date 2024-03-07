@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks List</title>
+    <link rel="stylesheet" href="{{url_for('static',filename = 'style.css')}}">
+</head>
+
+<nav>
+    <h1 id="title">Maker's To do List</h1>
+    <p><em>Inspired by Adam Savage's Book: Every Tool's a hammer</em></p>
+
+    <p> |
+        <a href="/">All tasks</a> |
+        <a href="/filter?mode=ongoing">Ongoing tasks</a> |
+        <a href="/filter?mode=pending">Pending tasks</a> |
+        <a href="/filter?mode=completed">Completed tasks</a> |
+    </p>
+</nav>
+<section class="content">
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+    {% for message in get_flashed_messages() %}
+    <div class="flash"> {{ message }} </div>
+    {% endfor %}
+
+
+</section>
+
+<body>
+    {% block content %}{% endblock %}
+    <script src="{{ url_for('static',filename='script.js')}}"></script>
+
+</body>
+
+</html>

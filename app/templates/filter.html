@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<main>
+    <h1>Tasks List</h1>
+    <div class="table-container">
+        <table>
+            <tr>
+                <th>Task</th>
+                <th>Parent Task</th>
+                <!-- <th>Delete</th> -->
+            </tr>
+            {% for task in tasks %}
+            <tr>
+                <td style="padding-left: 30px"> <!-- Increase padding for sub-tasks -->
+                    <div class="checkbox-group">
+                        {% if task.status == 'EMPTY' %}
+                        <div class="checkbox empty" data-task-id="{{ task.id }}"></div>
+                        {% elif task.status == 'HALF' %}
+                        <div class="checkbox half" data-task-id="{{ task.id }}"></div>
+                        {% elif task.status == 'FULL' %}
+                        <div class="checkbox full" data-task-id="{{ task.id }}"></div>
+                        {% endif %}
+                        <div class="task-title" data-task-id="{{task.id}}"><strong>{{ task.title }}</strong></div>
+                    </div>
+                </td>
+                <td>
+                    {{ task.lineage }}
+                </td>
+                <!-- <td>
+                    <form action="/submit?process=delete" method="post" style="display: inline;">
+                        <input type="hidden" name="id" value="{{task.id}}">
+                        <a href="#" onclick="this.closest('form').submit(); return false;"
+                            style="font-size: 8px;vertical-align: middle;">&#10060;</a>
+                    </form>
+                </td> -->
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <!-- <h1>Add Task</h1>
+    <form action=" /submit?process=add" method="post">
+        <label for="title">Task Title:</label>
+        <input type="text" id="title" name="title">
+
+        <select name="parent_id" id="parent_id">
+            <option value="" ,default>-</option>
+            {% for parent in parents %}
+            <option value="{{parent.id}}">{{parent.title}}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="Submit">
+    </form> -->
+</main>
+{% endblock %}

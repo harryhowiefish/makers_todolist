@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, request, jsonify)
+    Blueprint, request, jsonify, redirect, url_for)
 from .db import get_db
 from sqlite3 import Row
 
@@ -29,7 +29,17 @@ def task_by_id():
         return filter_task(filter)
 
     elif request.method == 'POST':
-        data = request.json
+        data = {}
+        if request.form:
+            for key in request.form:
+                if request.form[key] != '':
+                    data[key] = request.form[key]
+                else:
+                    data[key] = None
+            post_task(data)
+            return redirect(url_for('todo.show_all'))
+        elif request.json:
+            data = request.json
         return post_task(data)
 
     return '', 400
@@ -65,9 +75,17 @@ def get_task(id, mode):
     elif mode == 'all':
         data = db.execute(
             '''
-            SELECT id, title, parent_id, status
+            WITH RECURSIVE TaskTree AS (
+            SELECT id, title, parent_id, status, 1 AS Level
             FROM task
-            ORDER BY id
+            where parent_id is null
+            UNION ALL
+            SELECT t.id, t.title, t.parent_id, t.status, tt.Level + 1
+            FROM task t
+            INNER JOIN TaskTree tt ON t.parent_id = tt.id
+            )
+            SELECT * FROM TaskTree
+            ORDER BY id;
             ''').fetchall()
         return jsonify(RowsToDict(data))
     return jsonify({'error': 'Bad mode.'}), 400
@@ -167,11 +185,30 @@ def show_lineage(id):
         FROM task t
         INNER JOIN Lineage l ON t.id = l.parent_id
         )
-        SELECT id, title FROM Lineage
+        SELECT title FROM Lineage
         ORDER BY Level;
         ''', (id,)).fetchall()
+    result = ' >> '.join([task['title'] for task in data[1:]])
+    return jsonify({'lineage': result})
 
-    return jsonify(RowsToDict(data[1:], 'lineage'))
+
+def get_avaliable_parent(id):
+    db = get_db()
+    data = db.execute(
+        '''
+            WITH RECURSIVE TaskTree AS (
+            SELECT id, title, parent_id, status, 1 AS Level
+            FROM task
+            WHERE id = ?
+            UNION ALL
+            SELECT t.id, t.title, t.parent_id, t.status, tt.Level + 1
+            FROM task t
+            INNER JOIN TaskTree tt ON t.parent_id = tt.id
+            )
+            SELECT id,title FROM task
+            where id not in (SELECT id FROM TaskTree)
+        ''', (id,)).fetchall()
+    return jsonify(RowsToDict(data))
 
 
 def RowsToDict(data: Row, key_name: str = 'data') -> list:

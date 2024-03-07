@@ -1,11 +1,11 @@
 function toggleCheckbox(checkbox) {
   const fillType = checkbox.classList[1];
-  const taskId = checkbox.id
+  const taskId = checkbox.getAttribute('data-task-id')
+  console.log(taskId)
   const newFillType =
     fillType === 'empty' ? 'half' : fillType === 'half' ? 'full' : 'empty';
 
   checkbox.classList.replace(fillType, newFillType);
-  console.log(taskId)
   const data = {
     status: newFillType.toUpperCase(),
     id: taskId
@@ -37,10 +37,25 @@ function toggleCheckbox(checkbox) {
 }
 
 
-const elements = document.querySelectorAll('.checkbox');
+const checkboxes = document.querySelectorAll('.checkbox');
 
-elements.forEach(function (element) {
+checkboxes.forEach(function (element) {
   element.addEventListener('click', () => {
     toggleCheckbox(element);
+  })
+});
+
+
+document.getElementById('title').addEventListener('click', function () {
+  window.location.href = '/'; // Assuming the home page is at the root
+});
+
+
+const taskTitles = document.querySelectorAll('.task-title');
+taskTitles.forEach(function (element) {
+  element.addEventListener('click', () => {
+    console.log('test')
+    const taskId = element.getAttribute('data-task-id')
+    window.location.href = `/${taskId}`;
   })
 });

@@ -24,11 +24,6 @@ class Testrouting:
         assert response.status_code == 400
 
     @staticmethod
-    def test_get_missing_id(client):
-        response = client.get('/api/v1/tasks')
-        assert response.status_code == 400
-
-    @staticmethod
     def test_patch_success(client):
         data = {'title': 'Updated Title', 'status': 'HALF'}
         response = client.patch('/api/v1/tasks?id=1', data=json.dumps(data),
@@ -292,7 +287,7 @@ class TestShowLineage:
     def test_no_parent_id(app_context):
         response = api.show_lineage(1)
         result = json.loads(response.data)
-        expected = {'lineage': []}
+        expected = {'lineage': ''}
         assert response.status_code == 200
         assert result == expected
 
@@ -300,8 +295,7 @@ class TestShowLineage:
     def test_two_level_parent(app_context):
         response = api.show_lineage(5)
         result = json.loads(response.data)
-        expected = {'lineage': [{'id': 4, 'title': 'Sub_task_2'},
-                                {'id': 2, 'title': 'Main_task_2'}]}
+        expected = {'lineage': 'Sub_task_2 >> Main_task_2'}
         assert response.status_code == 200
         assert result == expected
 
