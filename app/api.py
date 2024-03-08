@@ -16,21 +16,26 @@ def task_by_id():
         if request.method == 'GET':
             if mode == '':
                 mode = 'tree'
-            return get_task(id, mode)
+            result, status_code = get_task(id, mode)
+            return jsonify(result), status_code
 
         if request.method == 'PATCH':
             data = request.json
-            return patch_task(id, data)
+            result, status_code = patch_task(id, data)
+            return jsonify(result), status_code
 
         elif request.method == 'DELETE':
-            return delete_task(id)
+            result, status_code = delete_task(id)
+            return jsonify(result), status_code
 
     if request.method == 'GET':
-        return filter_task(filter)
+        result, status_code = filter_task(filter)
+        return jsonify(result), status_code
 
     elif request.method == 'POST':
         data = {}
         if request.form:
+            print('na?')
             for key in request.form:
                 if request.form[key] != '':
                     data[key] = request.form[key]
@@ -40,7 +45,9 @@ def task_by_id():
             return redirect(url_for('todo.show_all'))
         elif request.json:
             data = request.json
-        return post_task(data)
+            print(data)
+        result, status_code = post_task(data)
+        return jsonify(result), status_code
 
     return '', 400
 
@@ -61,7 +68,7 @@ def get_task(id, mode):
             )
             SELECT * FROM TaskTree;
             ''', (id,)).fetchall()
-        return jsonify(RowsToDict(data))
+        return {'tasks': RowsToList(data)}, 200
 
     elif mode == 'single':
         data = db.execute(
@@ -70,7 +77,7 @@ def get_task(id, mode):
             FROM task
             WHERE id = ?
             ''', (id,)).fetchall()
-        return jsonify(RowsToDict(data))
+        return {'tasks': RowsToList(data)}, 200
 
     elif mode == 'all':
         data = db.execute(
@@ -87,8 +94,8 @@ def get_task(id, mode):
             SELECT * FROM TaskTree
             ORDER BY id;
             ''').fetchall()
-        return jsonify(RowsToDict(data))
-    return jsonify({'error': 'Bad mode.'}), 400
+        return {'tasks': RowsToList(data)}, 200
+    return {'error': 'Bad mode.'}, 400
 
 
 def filter_task(filter):
@@ -99,7 +106,7 @@ def filter_task(filter):
     FROM task
     WHERE status = ?
     ''', (filter,)).fetchall()
-    return jsonify(RowsToDict(data))
+    return {'tasks': RowsToList(data)}, 200
 
 
 def post_task(data):
@@ -119,13 +126,13 @@ def post_task(data):
             id = resp.lastrowid
             db.commit()
         except db.IntegrityError:
-            return jsonify({'error': 'Bad parent id.'}), 400
+            return {'error': 'Bad parent id.'}, 400
         data = db.execute(
             'SELECT id, title, parent_id, status FROM task where id=(?)',
             (id,)).fetchall()
-        return jsonify(RowsToDict(data))
+        return {'tasks': RowsToList(data)}, 200
 
-    return jsonify({'error': error}), 400
+    return {'error': error}, 400
 
 
 def patch_task(id, data):
@@ -133,9 +140,7 @@ def patch_task(id, data):
     allowed_columns = ['parent_id', 'status', 'title']
     safe_updates = {k: v for k, v in data.items() if k in allowed_columns}
     if not safe_updates:
-        return jsonify({'error':
-                        'All bad fields.'
-                        }), 400
+        return {'error': 'All bad fields.'}, 400
     sql_set_parts = [f"{k} = ?" for k in safe_updates]
     sql_set_clause = ", ".join(sql_set_parts)
     params = tuple(safe_updates.values()) + (id,)
@@ -144,19 +149,15 @@ def patch_task(id, data):
             f"UPDATE task SET {sql_set_clause} WHERE id = ?",
             params)
         if cur.rowcount == 0:
-            return jsonify({'error':
-                            'Id does not exist.'
-                            }), 400
+            return {'error': 'Id does not exist.'}, 400
         db.commit()
     except db.IntegrityError:
-        return jsonify({'error':
-                        'Bad data.'
-                        }), 400
+        return {'error': 'Bad data.'}, 400
 
     updated = db.execute(
         'SELECT id, title, parent_id, status FROM task where id=(?)',
         (id,)).fetchall()
-    return jsonify(RowsToDict(updated))
+    return {'tasks': RowsToList(updated)}, 200
 
 
 def delete_task(id):
@@ -165,11 +166,11 @@ def delete_task(id):
         db.execute("DELETE FROM task where id=(?)",
                    (id,))
         db.commit()
-        return '', 204
+        return {'tasks': ''}, 204
     except db.IntegrityError:
-        return jsonify({'error':
-                        'Deletion unsucessful. Please delete all child tasks before deletion.'  # noqa
-                        }), 400
+        return {'error':
+                'Deletion unsucessful. Please delete all child tasks before deletion.'  # noqa
+                }, 400
 
 
 def show_lineage(id):
@@ -189,7 +190,7 @@ def show_lineage(id):
         ORDER BY Level;
         ''', (id,)).fetchall()
     result = ' >> '.join([task['title'] for task in data[1:]])
-    return jsonify({'lineage': result})
+    return {'lineage': result}, 200
 
 
 def get_avaliable_parent(id):
@@ -208,11 +209,11 @@ def get_avaliable_parent(id):
             SELECT id,title FROM task
             where id not in (SELECT id FROM TaskTree)
         ''', (id,)).fetchall()
-    return jsonify(RowsToDict(data))
+    return {'options': RowsToList(data)}, 200
 
 
-def RowsToDict(data: Row, key_name: str = 'data') -> list:
+def RowsToList(data: Row) -> list:
     if not data:
-        return {key_name: []}
+        return []
     result = [dict(zip(item.keys(), item)) for item in data]
-    return {key_name: result}
+    return result

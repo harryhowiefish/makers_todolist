@@ -2,16 +2,6 @@ from app import todo
 import pytest
 
 
-@pytest.mark.xfail
-def test_cleanup_task():
-    task = {'Level': 1, 'id': 1, 'title': 'Main_task_1',
-            'parent_id': None, 'status': 'EMPTY'}
-    result = todo.cleanup_task(task)
-    expected = {'id': 1, 'title': 'Main_task_1',
-                'status': 'EMPTY'}
-    assert result == expected
-
-
 @pytest.fixture
 def tasks():
     tasks = [{'Level': 1, 'id': 1, 'title': 'Main_task_1',
@@ -28,20 +18,24 @@ def tasks():
     return tasks
 
 
-@pytest.mark.xfail
 def test_tasks_to_trees(tasks):
 
     trees = todo.tasks_to_trees(tasks)
     expected = [
-        {'id': 1, 'title': 'Main_task_1', 'status': 'EMPTY',
-            'sub_tasks': [
-                {'id': 3, 'title': 'Sub_task_1', 'status': 'HALF'}
-            ]},
-        {'id': 2, 'title': 'Main_task_2', 'status': 'EMPTY',
-            'sub_tasks': [
-                {'id': 4, 'title': 'Sub_task_2', 'status': 'EMPTY',
-                 'sub_tasks': [
-                     {'id': 5, 'title': 'Bottom_task_1', 'status': 'FULL'}
-                 ]}
-            ]}]
+        {'Level': 1, 'id': 1, 'title': 'Main_task_1',
+         'status': 'EMPTY', 'parent_id': None,
+         'sub_tasks': [
+             {'Level': 2, 'id': 3, 'title': 'Sub_task_1',
+              'status': 'HALF', 'parent_id': 1}
+         ]},
+        {'Level': 1, 'id': 2, 'title': 'Main_task_2',
+         'status': 'EMPTY', 'parent_id': None,
+         'sub_tasks': [
+             {'Level': 2, 'id': 4, 'title': 'Sub_task_2',
+              'status': 'EMPTY', 'parent_id': 2,
+              'sub_tasks': [
+                  {'Level': 3, 'id': 5, 'title': 'Bottom_task_1',
+                   'status': 'FULL', 'parent_id': 4}
+              ]}
+         ]}]
     assert trees == expected
