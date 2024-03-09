@@ -1,4 +1,4 @@
-from app import db
+from app.flask_app import db
 from flask import g
 from sqlite3 import Connection
 import pytest

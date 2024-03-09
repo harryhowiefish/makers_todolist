@@ -1,6 +1,6 @@
 from flask import (
     Blueprint, request, render_template, redirect, url_for)
-from app import api
+from app.src import api
 bp = Blueprint('todo', __name__)
 
 

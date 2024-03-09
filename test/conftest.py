@@ -1,8 +1,8 @@
 import os
 
 import pytest
-from app import create_app
-from app.db import get_db, init_db
+from app.flask_app import create_app
+from app.src.db import get_db, init_db
 
 with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'r',
           encoding='utf-8') as f:

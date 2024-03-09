@@ -1,5 +1,5 @@
 import json
-from app import api
+from app.flask_app import api
 
 
 class Testrouting:
@@ -56,7 +56,7 @@ class Testrouting:
             Recorder.called = True
             Recorder.filter = filter
             return {}, 200
-        monkeypatch.setattr('app.api.filter_task',
+        monkeypatch.setattr('app.src.api.filter_task',
                             lambda filter: fake_filter_task(filter))
         response = client.get("/api/v1/tasks?filter=FULL")
         assert response.status_code == 200

@@ -1,4 +1,4 @@
-from app import create_app
+from app.flask_app import create_app
 from flask import Flask, g
 
 

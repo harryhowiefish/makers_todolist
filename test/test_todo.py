@@ -1,4 +1,4 @@
-from app import todo
+from app.flask_app import todo
 import pytest
 
 
