@@ -1,4 +1,4 @@
-from app import create_app
+from app.flask_app import create_app
 from flask import Flask, g
 
 
@@ -7,7 +7,7 @@ def test_config():
 
 
 def test_create():
-    app = create_app()
+    app = create_app({'TESTING': True})
     assert isinstance(app, Flask)
 
 

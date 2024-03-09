@@ -7,8 +7,15 @@ Adam Savage Inspired Todo List
 - half marked
 - filter empty and mark
 
+
+### action list (test first)
+- see if more tests are needed
+- write a better readme
+- create a new branch to do session db
+
+
 ### additional function
-- time base
+- time based
     - reoccurence task
     - weekly view
 

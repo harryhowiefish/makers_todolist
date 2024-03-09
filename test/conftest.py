@@ -1,8 +1,8 @@
 import os
 
 import pytest
-from app import create_app
-from app.db import get_db, init_db
+from app.flask_app import create_app
+from app.src.db import get_db, init_db
 
 with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'r',
           encoding='utf-8') as f:
@@ -18,7 +18,7 @@ def app(tmp_path):
         'DATABASE': DB_PATH,
     })
     with app.app_context():
-        init_db(str(tmp_path))
+        init_db(str(tmp_path), load_sample=False)
         db = get_db()
         db.executescript(_data_sql)
 

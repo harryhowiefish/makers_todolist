@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+<main>
+    <h1>All tasks</h1>
+    <div class="table-container">
+        {% macro render_tasks(tasks, level=0) %}
+        {% for task in tasks %}
+        <tr>
+            <td style="padding-left: {{ level * 30 }}px"> <!-- Increase padding for sub-tasks -->
+                <div class="checkbox-group">
+                    {% if task.status == 'EMPTY' %}
+                    <div class="checkbox empty" data-task-id="{{ task.id }}"></div>
+                    {% elif task.status == 'HALF' %}
+                    <div class="checkbox half" data-task-id="{{ task.id }}"></div>
+                    {% elif task.status == 'FULL' %}
+                    <div class="checkbox full" data-task-id="{{ task.id }}"></div>
+                    {% endif %}
+                    <div class="task-title" data-task-id="{{task.id}}"><strong>{{ task.title }}</strong></div>
+                </div>
+                <!-- Status: {{ task.status }} -->
+    </div>
+    </td>
+    <td style="padding-inline-end: 150px">
+    </td>
+    <td>
+        {% if task.sub_tasks %}
+        {% else %}
+        <form action="/submit?process=delete" method="post" style="display: inline;">
+            <input type="hidden" name="id" value="{{task.id}}">
+            <!-- Include other necessary hidden inputs -->
+            <a href="#" onclick="this.closest('form').submit(); return false;"
+                style="font-size: 8px;vertical-align: middle;">&#10060;</a>
+        </form>
+        {% endif %}
+    </td>
+    </tr>
+    {% if task.sub_tasks %}
+    {{ render_tasks(task.sub_tasks, level + 1) }}
+    {% endif %}
+    {% endfor %}
+    {% endmacro %}
+
+    <table>
+        {{ render_tasks(tasks) }}
+    </table>
+    </div>
+    <h1>Add Task</h1>
+    <form action=" /api/v1/tasks" method="post">
+        <p>
+            <label for="title">Task Title:</label>
+            <input type="text" id="title" name="title">
+        </p>
+        <p>
+            <label for="parent_id">Parent task:</label>
+            <select name="parent_id" id="parent_id">
+                <option value="" ,default>-</option>
+                {% for parent in parents %}
+                <option value="{{parent.id}}">{{parent.title}}</option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <input type="submit" value="Submit">
+    </form>
+</main>
+{% endblock %}
