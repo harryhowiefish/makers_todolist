@@ -9,7 +9,6 @@ Adam Savage Inspired Todo List
 
 
 ### action list (test first)
-- reorganize code to fit pythonanywhere format.
 - see if more tests are needed
 - write a better readme
 - create a new branch to do session db
