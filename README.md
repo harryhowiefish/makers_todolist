@@ -9,11 +9,11 @@ Adam Savage Inspired Todo List
 
 
 ### action list (test first)
-- Change single view title to dyanmic
-- see if more tests are needed
-- add docstrings and type hints
 - reorganize code to fit pythonanywhere format.
+- see if more tests are needed
+- write a better readme
 - create a new branch to do session db
+
 
 ### additional function
 - time based

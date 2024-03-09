@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <main>
-    <h1>Tasks List</h1>
+    <h1>{{ main_task.title }}</h1>
     <div class="table-container">
         {% macro render_tasks(tasks, level=0) %}
         {% for task in tasks %}
@@ -44,31 +44,54 @@
         {{ render_tasks(tasks) }}
     </table>
     </div>
-    <h1>Edit Task</h1>
-    <form action=" /submit?process=edit" method="post">
-        <input type="hidden" name="id" value="{{tasks[0].id}}">
-        <label for="title">Task Title:</label>
-        <input type="text" name="title" value="{{tasks[0].title}}">
-        </p>
-        <p>
-            <label for="title">Task status:</label>
-            <select name="task_status" id="task_status">
-                <option value="EMPTY" {% if tasks[0].status=='EMPTY' %}selected{% endif %}>pending</option>
-                <option value="HALF" {% if tasks[0].status=='HALF' %}selected{% endif %}>ongoing</option>
-                <option value="FULL" {% if tasks[0].status=='FULL' %}selected{% endif %}>completed</option>
-            </select>
-        </p>
-        <p>
-            <label for="title">Parent task:</label>
-            <select name="parent_id" id="parent_id">
-                {% for parent in parents %}
-                <option value="{{parent.id}}" {% if tasks[0].parent_id==parent.id %}selected{% endif %}>{{parent.title}}
-                </option>
-                {% endfor %}
-            </select>
-        </p>
+    <div>
+        <h1>Edit Task</h1>
+        <form action=" /submit?process=edit" method="post">
+            <input type="hidden" name="id" value="{{main_task.id}}">
+            <label for="title">Task Title:</label>
+            <input type="text" name="title" value="{{main_task.title}}">
+            </p>
+            <p>
+                <label for="title">Task status:</label>
+                <select name="task_status" id="task_status">
+                    <option value="EMPTY" {% if main_task.status=='EMPTY' %}selected{% endif %}>pending</option>
+                    <option value="HALF" {% if main_task.status=='HALF' %}selected{% endif %}>ongoing</option>
+                    <option value="FULL" {% if main_task.status=='FULL' %}selected{% endif %}>completed</option>
+                </select>
+            </p>
+            <p>
+                <label for="title">Parent task:</label>
+                <select name="parent_id" id="parent_id">
+                    {% for parent in edit_parents %}
+                    <option value="{{parent.id}}" {% if main_task.parent_id==parent.id %}selected{% endif %}>
+                        {{parent.title}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </p>
 
-        <input type="submit" value="Submit">
-    </form>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div>
+        <h1>Add sub task</h1>
+        <form action=" /api/v1/tasks" method="post">
+            <p>
+                <label for="title">Task Title:</label>
+                <input type="text" name="title">
+            </p>
+            <p>
+                <label for="title">Parent task:</label>
+                <select name="parent_id" id="parent_id">
+                    {% for parent in new_parents %}
+                    <option value="{{parent.id}}">
+                        {{parent.title}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </p>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
 </main>
 {% endblock %}

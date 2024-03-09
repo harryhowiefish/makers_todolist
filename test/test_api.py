@@ -66,8 +66,7 @@ class Testrouting:
     @staticmethod
     def test_post_success(client):
         data = {'title': 'Updated Title'}
-        response = client.post('/api/v1/tasks', data=json.dumps(data),
-                               headers={"Content-Type": "application/json"})
+        response = client.post('/api/v1/tasks', json=data)
         assert response.status_code == 200
 
 

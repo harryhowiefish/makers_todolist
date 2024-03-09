@@ -46,15 +46,19 @@
     </div>
     <h1>Add Task</h1>
     <form action=" /api/v1/tasks" method="post">
-        <label for="title">Task Title:</label>
-        <input type="text" id="title" name="title">
-
-        <select name="parent_id" id="parent_id">
-            <option value="" ,default>-</option>
-            {% for parent in parents %}
-            <option value="{{parent.id}}">{{parent.title}}</option>
-            {% endfor %}
-        </select>
+        <p>
+            <label for="title">Task Title:</label>
+            <input type="text" id="title" name="title">
+        </p>
+        <p>
+            <label for="parent_id">Parent task:</label>
+            <select name="parent_id" id="parent_id">
+                <option value="" ,default>-</option>
+                {% for parent in parents %}
+                <option value="{{parent.id}}">{{parent.title}}</option>
+                {% endfor %}
+            </select>
+        </p>
 
         <input type="submit" value="Submit">
     </form>
