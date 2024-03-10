@@ -15,8 +15,9 @@ def app(tmp_path):
     app = create_app({
         'TESTING': True,
     }, instance_path=tmp_path)
+    DB_PATH = str(tmp_path / 'app.sqlite')
     with app.app_context():
-        init_db(str(tmp_path), load_sample=False)
+        init_db(DB_PATH, load_sample=False)
         db = get_db()
         db.executescript(_data_sql)
     DB_PATH = str(tmp_path / 'app.sqlite')

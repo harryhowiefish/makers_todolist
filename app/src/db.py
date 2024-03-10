@@ -48,7 +48,7 @@ def close_db(e=None):
         db.close()
 
 
-def init_db(folder_path: str | Path, load_sample: bool = True):
+def init_db(db_path: str | Path, load_sample: bool = True):
     '''
     Description
     -----------
@@ -56,8 +56,8 @@ def init_db(folder_path: str | Path, load_sample: bool = True):
 
     Parameters
     ---------
-    folder_path: str | Path
-    the folder where app.sqlite will locate.
+    db_path: str | Path
+    Path for the db file
 
     load_sample: bool. Default True
     whether or not to load sample data into database.
@@ -66,12 +66,11 @@ def init_db(folder_path: str | Path, load_sample: bool = True):
     --------
     None
     '''
-    if not os.path.exists(folder_path):
+    if not os.path.exists(Path(db_path).parent):
         raise FileExistsError("Path doesn't exist.")
-    DB_PATH = Path(folder_path) / 'app.sqlite'
-    if os.path.exists(DB_PATH):
-        os.unlink(DB_PATH)
-    db = sqlite3.connect(DB_PATH)
+    if os.path.exists(db_path):
+        os.unlink(db_path)
+    db = sqlite3.connect(db_path)
     with open('app/schema.sql', encoding='utf-8') as f:
         db.executescript(f.read())
     if load_sample:

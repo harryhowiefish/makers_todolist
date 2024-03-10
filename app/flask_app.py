@@ -30,7 +30,7 @@ def create_app(test_config: dict = None, instance_path: str | Path = None):
     if test_config:
         app.config.from_mapping(**test_config)
     else:
-        db.init_db(app.instance_path)
+        db.init_db(app.config['DATABASE'])
 
     # close db after request call
     app.teardown_appcontext(db.close_db)

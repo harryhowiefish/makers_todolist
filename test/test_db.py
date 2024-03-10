@@ -21,23 +21,23 @@ def test_close_db(app_context):
 
 class TestInitDb:
     @staticmethod
-    def test_bad_path(app_context):
+    def test_bad_path(tmp_path):
         with pytest.raises(FileExistsError):
-            db.init_db('./bad_path')
+            db.init_db(tmp_path / 'bad_path/app.sqlite')
 
     @staticmethod
-    def test_file_created_with_path(app_context, tmp_path):
-        db.init_db(tmp_path)
+    def test_file_created_with_path(tmp_path):
+        db.init_db(tmp_path / 'app.sqlite')
         assert os.path.exists(tmp_path / 'app.sqlite')
 
     @staticmethod
-    def test_file_created_with_string(app_context, tmp_path):
-        db.init_db(str(tmp_path))
+    def test_file_created_with_string(tmp_path):
+        db.init_db(str(tmp_path / 'app.sqlite'))
         assert os.path.exists(tmp_path / 'app.sqlite')
 
     @staticmethod
     def test_correct_schema(app_context, tmp_path):
-        db.init_db(tmp_path)
+        db.init_db(tmp_path / 'app.sqlite')
         d = db.get_db()
         result = d.execute('''SELECT name FROM sqlite_master
                               WHERE type='table' AND
