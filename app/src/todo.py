@@ -36,7 +36,6 @@ def show_task(id):
         return '', 204
     # this option is for changing the parent task for the current task.
     edit_task_options, _ = api.get_available_parent(id)
-    print(edit_task_options)
     # this option is for setting the parent task for a new added task.
     add_task_options = list_parent_options(data['tasks'])
     return render_template('single_task.html', main_task=tree,
@@ -85,6 +84,7 @@ def handle_submit():
         return redirect(request.environ.get('HTTP_REFERER', '/'))
     elif process == 'edit':
         api.patch_task(id=data['id'], data=data)
+        print(data)
         if data['parent_id'] is None:
             return redirect(url_for('todo.show_all'))
         return redirect(url_for('todo.show_task', id=data['parent_id']))

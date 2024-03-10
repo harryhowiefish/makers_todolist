@@ -104,7 +104,6 @@ class TestSubmit:
     def test_delete_default_header(client, submit_data, monkeypatch):
         monkeypatch.setattr('app.src.todo.redirect', lambda url: url)
         response = client.post('/submit?process=delete', data=submit_data)
-        print()
         assert response.status_code == 200
         assert response.data == b'/'
 

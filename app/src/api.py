@@ -380,7 +380,9 @@ def get_available_parent(id: int) -> tuple[dict, int]:
             SELECT id,title FROM task
             where id not in (SELECT id FROM TaskTree)
         ''', (id,)).fetchall()
-    return {'options': RowsToList(data)}, 200
+    options = [{'id': '', 'title': '-'}]
+    options.extend(RowsToList(data))
+    return {'options': options}, 200
 
 
 def RowsToList(data: Row) -> list[dict | None]:
