@@ -1,11 +1,23 @@
 from flask import (
-    Blueprint, request, render_template, redirect, url_for)
-from app.src import api
+    Blueprint, request, session, current_app,
+    render_template, redirect, url_for)
+from app.src import api, db
+import uuid
+import os
+
 bp = Blueprint('todo', __name__)
 
 
 @bp.route('/')
 def show_all():
+    if 'uid' not in session:
+        session['uid'] = uuid.uuid4()
+        db_filename = os.path.join(
+            current_app.config['DATABASE_DIR'],
+            f"session_{session['uid']}.sqlite")
+        db.init_db(db_filename)
+        session['DATABASE'] = db_filename
+
     data, _ = api.get_task(id=None, mode='all')
     trees = tasks_to_trees(data['tasks'])
     # this option is for setting the parent task for a new added task.

@@ -14,7 +14,7 @@ def create_app(test_config: dict = None, instance_path: str | Path = None):
     # check and create instance path
     if not os.path.exists(app.instance_path):
         os.makedirs(app.instance_path)
-    app.config['DATABASE'] = Path(app.instance_path) / 'app.sqlite'
+    app.config['DATABASE_DIR'] = Path(app.instance_path)
 
     # check and create basic_config.py
     config_path = Path(app.instance_path) / 'basic_config.py'
@@ -29,8 +29,6 @@ def create_app(test_config: dict = None, instance_path: str | Path = None):
     # if test_config is provided, don't init_db
     if test_config:
         app.config.from_mapping(**test_config)
-    else:
-        db.init_db(app.config['DATABASE'])
 
     # close db after request call
     app.teardown_appcontext(db.close_db)

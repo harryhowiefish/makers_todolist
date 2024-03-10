@@ -1,7 +1,7 @@
-from flask import g, current_app
+from flask import g, session
 import sqlite3
-import os
 from pathlib import Path
+import os
 
 
 def get_db() -> sqlite3.Connection:
@@ -19,9 +19,7 @@ def get_db() -> sqlite3.Connection:
     db: sqlite3.Connection
     '''
     if 'db' not in g:
-        g.db = sqlite3.connect(
-            current_app.config['DATABASE']
-        )
+        g.db = sqlite3.connect(session['DATABASE'])
         g.db.row_factory = sqlite3.Row
         g.db.execute("PRAGMA foreign_keys = ON")
 
@@ -67,9 +65,7 @@ def init_db(db_path: str | Path, load_sample: bool = True):
     None
     '''
     if not os.path.exists(Path(db_path).parent):
-        raise FileExistsError("Path doesn't exist.")
-    if os.path.exists(db_path):
-        os.unlink(db_path)
+        raise FileExistsError
     db = sqlite3.connect(db_path)
     with open('app/schema.sql', encoding='utf-8') as f:
         db.executescript(f.read())

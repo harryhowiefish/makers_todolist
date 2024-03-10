@@ -9,6 +9,12 @@ with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'r',
     _data_sql = f.read()
 
 
+@pytest.fixture(autouse=True)
+def replace_get_db(monkeypatch, tmp_path):
+    monkeypatch.setattr('app.src.db.session',
+                        {'DATABASE': str(tmp_path / 'app.sqlite')})
+
+
 @pytest.fixture
 def app(tmp_path):
 
@@ -16,11 +22,11 @@ def app(tmp_path):
         'TESTING': True,
     }, instance_path=tmp_path)
     DB_PATH = str(tmp_path / 'app.sqlite')
+
     with app.app_context():
         init_db(DB_PATH, load_sample=False)
         db = get_db()
         db.executescript(_data_sql)
-    DB_PATH = str(tmp_path / 'app.sqlite')
 
     yield app
 
