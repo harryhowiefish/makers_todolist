@@ -5,8 +5,11 @@ import os
 import secrets
 
 
-def create_app(test_config: dict = None):
-    app = Flask(__name__, instance_relative_config=True)
+def create_app(test_config: dict = None, instance_path: str | Path = None):
+    if instance_path:
+        app = Flask(__name__, instance_path=instance_path)
+    else:
+        app = Flask(__name__, instance_relative_config=True)
 
     # check and create instance path
     if not os.path.exists(app.instance_path):
@@ -18,7 +21,7 @@ def create_app(test_config: dict = None):
     if not os.path.exists(config_path):
         with open(config_path, 'w') as f:
             f.write(f'SECRET_KEY = "{secrets.token_hex()}"')
-    app.config.from_pyfile('basic_config.py')
+    app.config.from_pyfile(config_path)
 
     # if dev_config.py exist, it will overwrite existing configs
     app.config.from_pyfile('dev_config.py', silent=True)
