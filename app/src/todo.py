@@ -14,9 +14,29 @@ def show_all():
                            parents=parent_options)
 
 
+@bp.route('/<id>')
+def show_task(id):
+    data, _ = api.get_task(id, mode='tree')
+    trees = tasks_to_trees(data['tasks'])
+    if trees:
+        tree = trees[0]
+    else:
+        return '', 204
+    # this option is for changing the parent task for the current task.
+    edit_task_options, _ = api.get_available_parent(id)
+    print(edit_task_options)
+    # this option is for setting the parent task for a new added task.
+    add_task_options = list_parent_options(data['tasks'])
+    return render_template('single_task.html', main_task=tree,
+                           tasks=tree.get('sub_tasks', []),
+                           edit_parents=edit_task_options['options'],
+                           new_parents=add_task_options
+                           )
+
+
 @bp.route('/filter')
 def filter():
-    mode = request.args.get('mode', None, str)
+    mode = request.args.get('mode', '', str).lower()
     if mode == 'ongoing':
         data, _ = api.filter_task(filter='HALF')
     elif mode == 'pending':
@@ -35,21 +55,6 @@ def filter():
     return render_template('filter.html', tasks=data['tasks'])
 
 
-@bp.route('/<id>')
-def show_task(id):
-    data, _ = api.get_task(id, mode='tree')
-    tree = tasks_to_trees(data['tasks'])[0]
-    # this option is for changing the parent task for the current task.
-    edit_task_options, _ = api.get_avaliable_parent(id)
-    # this option is for setting the parent task for a new added task.
-    add_task_options = list_parent_options(data['tasks'])
-    return render_template('single_task.html', main_task=tree,
-                           tasks=tree.get('sub_tasks', []),
-                           edit_parents=edit_task_options['options'],
-                           new_parents=add_task_options
-                           )
-
-
 @bp.route('/submit', methods=['POST'])
 def handle_submit():
     '''
@@ -65,9 +70,11 @@ def handle_submit():
 
     if process == 'delete':
         api.delete_task(data['id'])
-        return redirect(url_for('todo.show_all'))
+        return redirect(request.environ.get('HTTP_REFERER', '/'))
     elif process == 'edit':
         api.patch_task(id=data['id'], data=data)
+        if data['parent_id'] is None:
+            return redirect(url_for('todo.show_all'))
         return redirect(url_for('todo.show_task', id=data['parent_id']))
     return 'Process not known', 404
 
@@ -109,11 +116,13 @@ def tasks_to_trees(tasks: list[dict]) -> list[dict]:
     return root_tasks
 
 
-def list_parent_options(tasks: list[dict]) -> list:
+def list_parent_options(tasks: list[dict]) -> list[dict]:
     '''
     Description
     -----------
-
+    List all the title and id of the tasks that are in the current task list.
+    This is used to show all the available parent tasks
+    when creating a new task.
 
     Parameters
     ---------

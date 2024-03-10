@@ -1,9 +1,10 @@
 from flask import (
-    Blueprint, request, redirect, Response)
+    Blueprint, request, redirect, Response, flash)
 from .db import get_db
 from sqlite3 import Row
 from typing import Literal
 from .utils import build_response
+
 
 bp = Blueprint('api', __name__, url_prefix="/api/v1")
 
@@ -54,14 +55,15 @@ def task_by_id() -> Response:
         Exclude empty values in the process.
         '''
         data = {}
-        print(request.json)
         if request.form:
             for key in request.form:
                 if request.form[key] != '':
                     data[key] = request.form[key]
                 else:
                     data[key] = None
-            post_task(data)
+            result, status_code = post_task(data)
+            if status_code == 400:
+                flash(result)
             # redirect to the page the form is submitted.
             return redirect(request.environ.get('HTTP_REFERER', '/'))
         # if data from request json, direct load it in.
@@ -200,8 +202,13 @@ def post_task(data: dict[str, str | int]) -> tuple[dict, int]:
         error = 'Missing title.'
     if 'parent_id' not in data:
         data['parent_id'] = None
+    elif data['parent_id'] is None:
+        pass
     elif not isinstance(data['parent_id'], int):
-        error = 'Parent_id has to be an integer.'
+        try:
+            data['parent_id'] = int(data['parent_id'])
+        except ValueError:
+            error = 'Parent_id has to be an integer.'
 
     if not error:
         try:
@@ -337,7 +344,7 @@ def show_lineage(id: int) -> tuple[dict, int]:
     return {'lineage': result}, 200
 
 
-def get_avaliable_parent(id: int) -> tuple[dict, int]:
+def get_available_parent(id: int) -> tuple[dict, int]:
     '''
     Description
     -----------

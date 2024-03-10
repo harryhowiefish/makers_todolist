@@ -11,16 +11,15 @@ with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'r',
 
 @pytest.fixture
 def app(tmp_path):
-    DB_PATH = str(tmp_path / 'app.sqlite')
 
     app = create_app({
         'TESTING': True,
-        'DATABASE': DB_PATH,
-    })
+    }, instance_path=tmp_path)
     with app.app_context():
         init_db(str(tmp_path), load_sample=False)
         db = get_db()
         db.executescript(_data_sql)
+    DB_PATH = str(tmp_path / 'app.sqlite')
 
     yield app
 
