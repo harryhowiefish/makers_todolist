@@ -283,7 +283,8 @@ class TestGetAvailable:
     @staticmethod
     def test_bottom_task(app_context):
         result, status = api.get_available_parent(2)
-        expected = {'options': [{'id': 1, 'title': 'Main_task_1'},
+        expected = {'options': [{'id': '', 'title': '-'},
+                                {'id': 1, 'title': 'Main_task_1'},
                                 {'id': 3, 'title': 'Sub_task_1'}]}
         assert status == 200
         assert result == expected
