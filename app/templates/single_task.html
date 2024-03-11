@@ -53,7 +53,7 @@
             </p>
             <p>
                 <label for="title">Task status:</label>
-                <select name="task_status" id="task_status">
+                <select name="status" id="task_status">
                     <option value="EMPTY" {% if main_task.status=='EMPTY' %}selected{% endif %}>pending</option>
                     <option value="HALF" {% if main_task.status=='HALF' %}selected{% endif %}>ongoing</option>
                     <option value="FULL" {% if main_task.status=='FULL' %}selected{% endif %}>completed</option>
